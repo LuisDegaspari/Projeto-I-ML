@@ -1,21 +1,31 @@
 
 
-Esse Dataset é sobre o valor de carros usados e como podemos prever o valor deles
+Esse Dataset é sobre o valor de carros usados e como podemos prever o valor deles.Durante a análise do dataset CarDekho, encontrei algumas complicações: a coluna Car_Name tinha muitos valores distintos e pouco úteis para a modelagem, sendo descartada. Também havia variáveis categóricas (Fuel_Type, Seller_Type, Transmission) que exigiram codificação, além da presença de outliers em Kms_Driven e Selling_Price, que distorciam a distribuição e precisaram ser tratados.
 
 
 
 
 Exploração dos dados
 
-Colunas mais importantes
+Principais colunas do dataset
 
-Present_Price : preço atual de mercado de um carro zero km do mesmo modelo.
+-Car_Name → Nome do modelo do carro (não utilizada na modelagem, pois possui alta cardinalidade).
 
-Car_Age : idade do carro (2025 – ano de fabricação).
+-Year → Ano de fabricação do veículo (convertido em Car_Age no pré-processamento).
 
-Kms_Driven : total de quilômetros rodados.
+-Selling_Price → Preço efetivo de revenda do carro (variável alvo para regressão).
 
-Selling_Price : preço efetivo de revenda (variável alvo).
+-Present_Price → Preço de mercado de um carro zero km do mesmo modelo.
+
+-Kms_Driven → Quilometragem total rodada pelo veículo.
+
+-Owner → Quantidade de donos anteriores.
+
+-Fuel_Type → Tipo de combustível (ex.: Diesel, Petrol, CNG).
+
+-Seller_Type → Tipo de vendedor (Particular ou Revendedor).
+
+-Transmission → Tipo de transmissão (Manual ou Automática).
 
 === "Saida"
     ``` python exec="1" html="1"
@@ -46,10 +56,9 @@ Nesse gráfico podemos perceber que os Km_Rodado, tem relação com o preço dos
 
 
     ```
-Aqui nessa vizualização vemos que quanto mais novos os carros mais caros são eles.
+Gráfico de dispersão evidenciando que **carros mais novos** (anos recentes) tendem a ter preços de venda mais elevados, enquanto veículos mais antigos valem menos.  
 
 
-Vamos começar o pré-processamento dos dados
 
 === "Saida"
     ``` python exec="1"
@@ -65,8 +74,10 @@ Vamos começar o pré-processamento dos dados
 
 
     ```
+No pré-processamento do dataset CarDekho, criei a variável Car_Age a partir do ano de fabricação e normalizei a quilometragem. Removi colunas irrelevantes como Car_Name, tratei valores ausentes com mediana (numéricos) e “Unknown” (categóricos), e apliquei One-Hot Encoding para variáveis categóricas. Também limitei outliers e criei a variável alvo price_bucket (baixo, médio, alto), deixando a base pronta para regressão e classificação.
 
-Agora vai ter a divisão dos dados
+Após o pré-processamento, o dataset final possui **301 registros e 14 colunas**, sem valores ausentes.
+
 
 === "Saida"
     ``` python exec="1"
@@ -82,16 +93,9 @@ Agora vai ter a divisão dos dados
 
 
     ```
+Com o dataset tratado, realizamos a separação em **conjunto de treino e teste**, garantindo reprodutibilidade e estratificação da variável alvo `price_bucket`.
+Isso garante que os modelos sejam avaliados em dados nunca vistos, mantendo a proporção entre as classes.
 
-
-
-
-
-
-
-
-
-Começaremos com a Decision Tree
 
 === "Saida"
     ``` python exec="1" html="1"
