@@ -26,9 +26,7 @@ class KNNClassifier:
         most_common = max(set(k_nearest_labels), key=k_nearest_labels.count)
         return most_common
 
-# ===============================
 # Carregar dataset CarDekho
-# ===============================
 url = "https://raw.githubusercontent.com/LuisDegaspari/DataSet/refs/heads/main/cardekho_data.csv"
 df = pd.read_csv(url)
 
@@ -56,9 +54,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 X_train = np.asarray(X_train, dtype=float)
 X_test  = np.asarray(X_test,  dtype=float)
 
-# ===============================
 # Normalização z-score (usando treino)
-# ===============================
 mu = X_train.mean(axis=0)
 sigma = X_train.std(axis=0)
 sigma[sigma == 0] = 1.0  # evita divisão por zero
@@ -66,9 +62,7 @@ sigma[sigma == 0] = 1.0  # evita divisão por zero
 X_train = (X_train - mu) / sigma
 X_test  = (X_test  - mu) / sigma
 
-# ===============================
 # Treinar e avaliar
-# ===============================
 knn = KNNClassifier(k=5)  # ajuste k se quiser
 knn.fit(X_train, y_train)
 predictions = knn.predict(X_test)
