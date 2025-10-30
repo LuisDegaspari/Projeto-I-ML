@@ -49,4 +49,14 @@ print(f"R²: {r2:.3f}")
 # Feature importances
 importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values(ascending=False)
 print("\nFeature Importances:")
-print(importances.head(10))
+output = f"""
+RMSE: {rmse:.2f}
+R²: {r2:.3f}
+    
+Feature Importances:
+--------------------
+{importances.head(10).to_string()}
+"""
+
+print(f"<pre>{output}</pre>")
+
