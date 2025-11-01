@@ -4,8 +4,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, FunctionTransformer
 from sklearn.pipeline import Pipeline
+import textwrap
 
-url = "https://raw.githubusercontent.com/LuisDegaspari/DataSet/refs/heads/main/cardekho_data.csv"
+url = "https://raw.githubusercontent.com/LuisDegaspari/DataSet/main/cardekho_data.csv"
 df = pd.read_csv(url)
 
 expected_cols = [
@@ -39,14 +40,14 @@ def numeric_transformer_df(X_num: pd.DataFrame):
         X_num["Kms_Driven"] = np.log1p(X_num["Kms_Driven"])
     return X_num
 
-numeric_pipe = Pipeline(steps=[
+numeric_pipe = Pipeline([
     ("log_kms", FunctionTransformer(numeric_transformer_df, validate=False, feature_names_out="one-to-one"))
 ])
 
 cat_pipe = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
 
 preprocessor = ColumnTransformer(
-    transformers=[
+    [
         ("num", numeric_pipe, numeric_cols),
         ("cat", cat_pipe, low_card_cat),
     ],
@@ -63,29 +64,28 @@ X_train_prepared = preprocessor.transform(X_train)
 X_test_prepared = preprocessor.transform(X_test)
 feature_names = preprocessor.get_feature_names_out()
 
-total = len(X)
-n_train = len(X_train)
-n_test = len(X_test)
+txt = textwrap.dedent(f"""
+<pre>
+PREPARAÇÃO E DIVISÃO DOS DADOS
+-------------------------------
+Amostras totais: {len(X)}
+Treino: {len(X_train)} | Teste: {len(X_test)}
+Proporção: {len(X_train)/len(X):.1%} treino | {len(X_test)/len(X):.1%} teste
 
-out = []
-out.append("PREPARAÇÃO E DIVISÃO DOS DADOS")
-out.append("-------------------------------")
-out.append(f"Amostras totais: {total}")
-out.append(f"Treino: {n_train} | Teste: {n_test}")
-out.append(f"Proporção: {n_train/total:.1%} treino | {n_test/total:.1%} teste")
-out.append("")
-out.append("Colunas numéricas usadas:")
-out.append(", ".join(numeric_cols))
-out.append("")
-out.append("Colunas categóricas usadas:")
-out.append(", ".join(low_card_cat))
-out.append("")
-out.append("Matrizes pós-encoding:")
-out.append(f"X_train_prepared: {X_train_prepared.shape}")
-out.append(f"X_test_prepared : {X_test_prepared.shape}")
-out.append(f"Número total de features: {len(feature_names)}")
-out.append("")
-out.append("Primeiras 15 features após encoding:")
-out.append(", ".join(list(feature_names[:15])))
+Colunas numéricas usadas:
+{", ".join(numeric_cols)}
 
-print(f"<pre>{'\n'.join(out)}</pre>")
+Colunas categóricas usadas:
+{", ".join(low_card_cat)}
+
+Matrizes pós-encoding:
+X_train_prepared: {X_train_prepared.shape}
+X_test_prepared : {X_test_prepared.shape}
+Número total de features: {len(feature_names)}
+
+Primeiras 15 features após encoding:
+{", ".join(feature_names[:15]) + ("..." if len(feature_names) > 15 else "")}
+</pre>
+""").strip()
+
+print(txt)
